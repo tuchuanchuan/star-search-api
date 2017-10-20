@@ -20,18 +20,15 @@ public class StarDAO {
     @Autowired
     protected SqlSessionTemplate sqlSession;
 
-    @Value("${hop_each_build}")
-    private String hopEachBuild;
+    public int getTrackMaxId() {
+        return (Integer)sqlSession.selectOne("getMaxId");
+    }
 
-    public List<Integer> getTrackList() {
+    public List<HashMap<String, Object>> getTrackList(int minId, int maxId) {
         List<Integer> result = new ArrayList<Integer>();
         Map<String, Object> paras = new HashMap<String, Object>();
-        paras.put("start", 0);
-        paras.put("end", 500);
-        List<HashMap<String, Object>> list = sqlSession.selectList("getAllTrack", paras);
-        for (HashMap<String, Object> map: list) {
-            result.add((Integer)map.get("id"));
-        }
-        return result;
+        paras.put("start", minId);
+        paras.put("end", maxId);
+        return sqlSession.selectList("getAllTrack", paras);
     }
 }

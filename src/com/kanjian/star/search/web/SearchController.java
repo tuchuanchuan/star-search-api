@@ -17,26 +17,66 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import org.apache.lucene.queryparser.classic.ParseException;
 
-import com.kanjian.star.search.dao.StarDAO;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
+
+import com.kanjian.star.search.services.IndexBuilder;
+import com.kanjian.star.search.services.TrackSearcher;
+
 
 @Controller
-@RequestMapping(value="/health_check")
 public class SearchController {
 
     private static final Logger logger = Logger.getLogger(SearchController.class);
 
     @Autowired
-    private StarDAO dao;
+    private IndexBuilder indexBuilder;
 
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value="/health_check", method = RequestMethod.GET)
     public String healthCheck(HttpServletResponse response) throws IOException {
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write("ok");
-        logger.info(dao.getTrackList().size());
+
+        return null;
+    }
+
+    @RequestMapping(value="/build_index", method = RequestMethod.GET)
+    public String buildIndex(HttpServletResponse response) throws IOException {
+        indexBuilder.buildIndex();
+        response.getWriter().write("ok");
+
+        return null;
+    }
+
+    @RequestMapping(value="/reload_index", method = RequestMethod.GET)
+    public String reloadIndex(HttpServletResponse response) throws IOException {
+        TrackSearcher.reloadIndex();
+        response.getWriter().write("ok");
+
+        return null;
+    }
+
+    @RequestMapping(value="/search", method = RequestMethod.GET)
+    public String searchTrack(
+			@RequestParam(value="query", required=false) String query,
+			@RequestParam(value="start", required=false) String start,
+			@RequestParam(value="rows", required=false) String rows,
+            HttpServletResponse response) throws IOException, ParseException {
+        int qs = 0;
+        int qr = 20;
+        if (start != null) qs = Integer.parseInt(start);
+        if (rows != null) qr = Integer.parseInt(rows);
+        List<Integer> results = TrackSearcher.searchTrack(query, qs, qr);
+        JsonObject ret = new JsonObject();
+        ret.addProperty("error_status", 0);
+        JsonElement ja = new Gson().toJsonTree(results, new TypeToken<List<Integer>>() {}.getType());
+        ret.add("ret", ja);
+        response.getWriter().write(ret.toString());
+
         return null;
     }
 }

@@ -6,7 +6,25 @@
 
 <mapper namespace="com.kanjian.star.search.dao.StarDAO">
     <select id="getAllTrack" parameterType="hashmap" resultType="hashmap">
-        SELECT id, name FROM kanjian_ddex_track WHERE id&gt;#{start} AND id&lt;=#{end}
+        SELECT
+            id,
+            name,
+            version,
+            artist_list,
+            feat_list,
+            lyricist_list,
+            composer_list,
+            arranger_list,
+            duration,
+            english_name,
+            no_lyrics
+        FROM
+            kanjian_ddex_track
+        WHERE
+            id&gt;#{start} AND id&lt;=#{end}
+    </select>
+    <select id="getMaxId" resultType="int">
+        select MAX(id) FROM kanjian_ddex_track
     </select>
 </mapper>
 

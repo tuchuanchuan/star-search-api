@@ -14,7 +14,6 @@
     <context:property-placeholder location="classpath:jdbc.properties,classpath:config.properties"/>
 
     <context:component-scan base-package="com.kanjian.star">
-        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
     </context:component-scan>
 
     <!-- boneCP 数据库连接池配置信息-->
