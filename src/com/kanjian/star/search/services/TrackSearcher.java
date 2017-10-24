@@ -39,7 +39,6 @@ public class TrackSearcher {
 
     private static final Logger logger = Logger.getLogger(TrackSearcher.class);
 
-	// @Value("${index_original_path}")
 	private static String indexOriginalPath = "/data/star_search/index/original";
 
     private static IndexReader indexReader = null;
