@@ -10,11 +10,6 @@
             id,
             name,
             version,
-            artist_list,
-            feat_list,
-            lyricist_list,
-            composer_list,
-            arranger_list,
             duration,
             english_name,
             no_lyrics

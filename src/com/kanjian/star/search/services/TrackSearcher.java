@@ -12,6 +12,7 @@ import org.apache.lucene.search.Sort;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.BooleanClause;
+import org.apache.lucene.search.NumericRangeQuery;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.SortField;
 import org.apache.lucene.search.IndexSearcher;
@@ -74,7 +75,7 @@ public class TrackSearcher {
         }
         return result;
     }
-    private static Query buildQuery(String query) throws ParseException {
+    private static Query buildQuery(String query, int durationStart, int durationEnd) throws ParseException {
         BooleanQuery bq = new BooleanQuery();
         Analyzer analyzer = new StandardAnalyzer();
         QueryParser titleParser = new QueryParser("title", analyzer);
@@ -87,6 +88,14 @@ public class TrackSearcher {
         }
         bq.add(titleQuery, BooleanClause.Occur.MUST);
 
+        if (durationStart != null && durationEnd != null && durationStart <= durationEnd) {
+            NumericRangeQuery<Integer> durationQuery = NumericRangeQuery.newIntRange("duration", durationStart, durationEnd, true, true);
+            bq.add(durationQuery, BooleanClause.Occur.MUST);
+        }
+
         return bq;
+    }
+    private static Query buildQuery(String query) {
+        return buildQuery(query, 0, 999);
     }
 }
