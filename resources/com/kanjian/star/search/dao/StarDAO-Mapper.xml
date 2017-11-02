@@ -25,7 +25,8 @@
         SELECT
             id,
             name,
-            version
+            version,
+            source
         FROM
             kanjian_ddex_album
         WHERE

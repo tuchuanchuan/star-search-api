@@ -89,6 +89,7 @@ public class SearchController {
     @RequestMapping(value="/search_album", method = RequestMethod.GET)
     public String searchAlbum(
 			@RequestParam(value="query", required=false) String query,
+			@RequestParam(value="source", required=false) String source,
 			@RequestParam(value="start", required=false) String start,
 			@RequestParam(value="rows", required=false) String rows,
             HttpServletResponse response) throws IOException, ParseException {
@@ -97,7 +98,7 @@ public class SearchController {
         List<Integer> results = new ArrayList<Integer>();
         if (start != null) qs = Integer.parseInt(start);
         if (rows != null) qr = Integer.parseInt(rows);
-        int total = AlbumSearcher.searchAlbum(query, qs, qr, results);
+        int total = AlbumSearcher.searchAlbum(query, Integer.parseInt(source), qs, qr, results);
         JsonObject ret = new JsonObject();
         ret.addProperty("error_status", 0);
         Gson gson = new Gson();

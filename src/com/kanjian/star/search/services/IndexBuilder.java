@@ -120,6 +120,8 @@ public class IndexBuilder {
                     title += " " + (String)album.get("version");
                 }
                 doc.add(new TextField("title", title + " " + "kanjiansdxqfx", Field.Store.NO));
+                Field sourceField = new IntField("source", (Integer)album.get("source"), Field.Store.NO);
+                doc.add(sourceField);
                 writer.addDocument(doc);
             }
         }

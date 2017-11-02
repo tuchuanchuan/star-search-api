@@ -56,11 +56,11 @@ public class AlbumSearcher {
         return 0;
     }
 
-    public static int searchAlbum(String key, int start, int rows, List<Integer> result) throws IOException, ParseException {
+    public static int searchAlbum(String key, int source, int start, int rows, List<Integer> result) throws IOException, ParseException {
         if (indexSearcher == null) {
             reloadIndex();
         }
-        Query query = buildQuery(key);
+        Query query = buildQuery(key, source);
         logger.info(query);
         Sort sort = ID_SORT;
         if (query != null) {
@@ -75,7 +75,7 @@ public class AlbumSearcher {
         }
         return 0;
     }
-    private static Query buildQuery(String query) throws ParseException {
+    private static Query buildQuery(String query, int source) throws ParseException {
         BooleanQuery bq = new BooleanQuery();
         Analyzer analyzer = new StandardAnalyzer();
         QueryParser titleParser = new QueryParser("title", analyzer);
@@ -87,6 +87,11 @@ public class AlbumSearcher {
             titleQuery = titleParser.parse(QueryParserBase.escape(query + " kanjiansdxqfx"));
         }
         bq.add(titleQuery, BooleanClause.Occur.MUST);
+
+        if (source >= 0) {
+            NumericRangeQuery<Integer> sourceQuery = NumericRangeQuery.newIntRange("source", source, source, true, true);
+            bq.add(sourceQuery, BooleanClause.Occur.MUST);
+        }
 
         return bq;
     }
