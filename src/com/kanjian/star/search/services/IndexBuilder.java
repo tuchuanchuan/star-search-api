@@ -123,6 +123,8 @@ public class IndexBuilder {
                 writer.addDocument(doc);
             }
         }
+
+        writer.close();
         return 0;
     }
 }

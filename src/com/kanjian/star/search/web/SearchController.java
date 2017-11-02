@@ -62,7 +62,7 @@ public class SearchController {
         return null;
     }
 
-    @RequestMapping(value="/search", method = RequestMethod.GET)
+    @RequestMapping(value="/search_track", method = RequestMethod.GET)
     public String searchTrack(
 			@RequestParam(value="query", required=false) String query,
 			@RequestParam(value="start", required=false) String start,
@@ -73,6 +73,26 @@ public class SearchController {
         if (start != null) qs = Integer.parseInt(start);
         if (rows != null) qr = Integer.parseInt(rows);
         List<Integer> results = TrackSearcher.searchTrack(query, qs, qr);
+        JsonObject ret = new JsonObject();
+        ret.addProperty("error_status", 0);
+        JsonElement ja = new Gson().toJsonTree(results, new TypeToken<List<Integer>>() {}.getType());
+        ret.add("ret", ja);
+        response.getWriter().write(ret.toString());
+
+        return null;
+    }
+
+    @RequestMapping(value="/search_album", method = RequestMethod.GET)
+    public String searchAlbum(
+			@RequestParam(value="query", required=false) String query,
+			@RequestParam(value="start", required=false) String start,
+			@RequestParam(value="rows", required=false) String rows,
+            HttpServletResponse response) throws IOException, ParseException {
+        int qs = 0;
+        int qr = 20;
+        if (start != null) qs = Integer.parseInt(start);
+        if (rows != null) qr = Integer.parseInt(rows);
+        List<Integer> results = AlbumSearcher.searchAlbum(query, qs, qr);
         JsonObject ret = new JsonObject();
         ret.addProperty("error_status", 0);
         JsonElement ja = new Gson().toJsonTree(results, new TypeToken<List<Integer>>() {}.getType());
