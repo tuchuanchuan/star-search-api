@@ -26,6 +26,7 @@ import com.google.gson.reflect.TypeToken;
 
 import com.kanjian.star.search.services.IndexBuilder;
 import com.kanjian.star.search.services.TrackSearcher;
+import com.kanjian.star.search.services.AlbumSearcher;
 
 
 @Controller
@@ -55,6 +56,7 @@ public class SearchController {
     @RequestMapping(value="/reload_index", method = RequestMethod.GET)
     public String reloadIndex(HttpServletResponse response) throws IOException {
         TrackSearcher.reloadIndex();
+        AlbumSearcher.reloadIndex();
         response.getWriter().write("ok");
 
         return null;

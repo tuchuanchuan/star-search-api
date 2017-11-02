@@ -18,7 +18,20 @@
         WHERE
             id&gt;#{start} AND id&lt;=#{end}
     </select>
-    <select id="getMaxId" resultType="int">
+    <select id="getMaxTrackId" resultType="int">
+        select MAX(id) FROM kanjian_ddex_track
+    </select>
+    <select id="getAllAlbum" parameterType="hashmap" resultType="hashmap">
+        SELECT
+            id,
+            name,
+            version
+        FROM
+            kanjian_ddex_album
+        WHERE
+            id&gt;#{start} AND id&lt;=#{end}
+    </select>
+    <select id="getMaxAlbumId" resultType="int">
         select MAX(id) FROM kanjian_ddex_track
     </select>
 </mapper>

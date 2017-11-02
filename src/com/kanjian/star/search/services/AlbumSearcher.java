@@ -36,19 +36,19 @@ import org.springframework.stereotype.Service;
 
 @Component
 @Service
-public class TrackSearcher {
+public class AlbumSearcher {
 
-    private static final Logger logger = Logger.getLogger(TrackSearcher.class);
+    private static final Logger logger = Logger.getLogger(AlbumSearcher.class);
 
-	private static String indexOriginalPath = "/data/star_search/index/original";
+    private static String indexOriginalPath = "/data/star_search/index/original";
 
     private static IndexReader indexReader = null;
     private static IndexSearcher indexSearcher = null;
 
-	private static final Sort ID_SORT = new Sort(new SortField("id", SortField.Type.INT, true));
+    private static final Sort ID_SORT = new Sort(new SortField("id", SortField.Type.INT, true));
 
     public static int reloadIndex() throws IOException {
-        Directory directory = FSDirectory.open(Paths.get(indexOriginalPath+"/track"));
+        Directory directory = FSDirectory.open(Paths.get(indexOriginalPath+"/album"));
         indexReader = DirectoryReader.open(directory);
         indexSearcher = new IndexSearcher(indexReader);
         TopDocs results = indexSearcher.search(new MatchAllDocsQuery(), 100);
@@ -56,7 +56,7 @@ public class TrackSearcher {
         return 0;
     }
 
-    public static List<Integer> searchTrack(String key, int start, int rows) throws IOException, ParseException {
+    public static List<Integer> searchAlbum(String key, int start, int rows) throws IOException, ParseException {
         if (indexSearcher == null) {
             reloadIndex();
         }
@@ -75,7 +75,7 @@ public class TrackSearcher {
         }
         return result;
     }
-    private static Query buildQuery(String query, int durationStart, int durationEnd) throws ParseException {
+    private static Query buildQuery(String query) throws ParseException {
         BooleanQuery bq = new BooleanQuery();
         Analyzer analyzer = new StandardAnalyzer();
         QueryParser titleParser = new QueryParser("title", analyzer);
@@ -88,14 +88,6 @@ public class TrackSearcher {
         }
         bq.add(titleQuery, BooleanClause.Occur.MUST);
 
-        if (durationStart <= durationEnd) {
-            NumericRangeQuery<Integer> durationQuery = NumericRangeQuery.newIntRange("duration", durationStart, durationEnd, true, true);
-            bq.add(durationQuery, BooleanClause.Occur.MUST);
-        }
-
         return bq;
-    }
-    private static Query buildQuery(String query) throws ParseException {
-        return buildQuery(query, 0, 999);
     }
 }

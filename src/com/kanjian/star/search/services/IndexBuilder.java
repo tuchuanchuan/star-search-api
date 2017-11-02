@@ -60,6 +60,12 @@ public class IndexBuilder {
 	}
 
     public int buildIndex() throws IOException {
+        buildTrackIndex();
+        buildAlbumIndex();
+        return 0;
+    }
+
+    public int buildTrackIndex() throws IOException {
 
         Analyzer analyzer = new StandardAnalyzer();
         String trackIndexPath = indexOriginalPath + "/track";
@@ -92,6 +98,31 @@ public class IndexBuilder {
         }
 
         writer.close();
+        return 0;
+    }
+    public int buildAlbumIndex() throws IOException {
+        Analyzer analyzer = new StandardAnalyzer();
+        String albumIndexPath = indexOriginalPath + "/album";
+        Directory dir = FSDirectory.open(Paths.get(albumIndexPath));
+        IndexWriterConfig indexWriter = new IndexWriterConfig(analyzer);
+        indexWriter.setOpenMode(OpenMode.CREATE);
+        indexWriter.setRAMBufferSizeMB(Integer.parseInt(maxMemory));
+        IndexWriter writer = new IndexWriter(dir, indexWriter);
+
+        int maxId = dao.getAlbumMaxId();
+        int count_per_query = Integer.parseInt(hopEachBuild);
+        for (int i = 0;(i+1) * count_per_query <= maxId+1;i++) {
+            for (HashMap<String, Object> album: dao.getAlbumList(i*count_per_query, (i+1)*count_per_query)) {
+				Document doc = new Document();
+                doc.add(new IntField("id", (Integer)album.get("id"), INT_FIELD_TYPE_STORED_SORTED));
+                String title = (String)album.get("name");
+                if (album.get("version") != null) {
+                    title += " " + (String)album.get("version");
+                }
+                doc.add(new TextField("title", title + " " + "kanjiansdxqfx", Field.Store.NO));
+                writer.addDocument(doc);
+            }
+        }
         return 0;
     }
 }
