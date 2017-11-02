@@ -56,11 +56,10 @@ public class AlbumSearcher {
         return 0;
     }
 
-    public static List<Integer> searchAlbum(String key, int start, int rows) throws IOException, ParseException {
+    public static int searchAlbum(String key, int start, int rows, List<Integer> result) throws IOException, ParseException {
         if (indexSearcher == null) {
             reloadIndex();
         }
-        List<Integer> result = new ArrayList<Integer>();
         Query query = buildQuery(key);
         logger.info(query);
         Sort sort = ID_SORT;
@@ -72,8 +71,9 @@ public class AlbumSearcher {
                 result.add(Integer.parseInt(doc.get("id")));
             }
             logger.info("nummber of hits: " + topDocs.totalHits);
+            return topDocs.totalHits;
         }
-        return result;
+        return 0;
     }
     private static Query buildQuery(String query) throws ParseException {
         BooleanQuery bq = new BooleanQuery();

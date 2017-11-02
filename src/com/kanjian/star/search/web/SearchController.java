@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 import javax.servlet.http.HttpServletResponse;
@@ -70,13 +71,16 @@ public class SearchController {
             HttpServletResponse response) throws IOException, ParseException {
         int qs = 0;
         int qr = 20;
+        List<Integer> results = new ArrayList<Integer>();
         if (start != null) qs = Integer.parseInt(start);
         if (rows != null) qr = Integer.parseInt(rows);
-        List<Integer> results = TrackSearcher.searchTrack(query, qs, qr);
+        int total = TrackSearcher.searchTrack(query, qs, qr, results);
         JsonObject ret = new JsonObject();
         ret.addProperty("error_status", 0);
-        JsonElement ja = new Gson().toJsonTree(results, new TypeToken<List<Integer>>() {}.getType());
+        Gson gson = new Gson();
+        JsonElement ja = gson.toJsonTree(results, new TypeToken<List<Integer>>() {}.getType());
         ret.add("ret", ja);
+        ret.addProperty("total", total);
         response.getWriter().write(ret.toString());
 
         return null;
@@ -90,13 +94,16 @@ public class SearchController {
             HttpServletResponse response) throws IOException, ParseException {
         int qs = 0;
         int qr = 20;
+        List<Integer> results = new ArrayList<Integer>();
         if (start != null) qs = Integer.parseInt(start);
         if (rows != null) qr = Integer.parseInt(rows);
-        List<Integer> results = AlbumSearcher.searchAlbum(query, qs, qr);
+        int total = AlbumSearcher.searchAlbum(query, qs, qr, results);
         JsonObject ret = new JsonObject();
         ret.addProperty("error_status", 0);
-        JsonElement ja = new Gson().toJsonTree(results, new TypeToken<List<Integer>>() {}.getType());
+        Gson gson = new Gson();
+        JsonElement ja = gson.toJsonTree(results, new TypeToken<List<Integer>>() {}.getType());
         ret.add("ret", ja);
+        ret.addProperty("total", total);
         response.getWriter().write(ret.toString());
 
         return null;
