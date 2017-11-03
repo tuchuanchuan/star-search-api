@@ -9,6 +9,7 @@ import java.nio.file.Paths;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.IntField;
 import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.analysis.Analyzer;
@@ -26,6 +27,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 
 import com.kanjian.star.search.dao.StarDAO;
 
@@ -119,7 +123,59 @@ public class IndexBuilder {
                 if (album.get("version") != null) {
                     title += " " + (String)album.get("version");
                 }
+                if (album.get("upc") != null) {
+                    title += " " + (String)album.get("upc");
+                }
+                if (album.get("distribution_company") != null) {
+                    title += " " + (String)album.get("distribution_company");
+                }
+                if (album.get("author_list") != null) {
+                    Gson gson = new Gson();
+                    JsonArray authorList = gson.fromJson((String)album.get("author_list"), JsonArray.class);
+                    for (int j = 0; j < authorList.size(); j++) {
+                        title += " " + authorList.get(j).getAsString();
+                    }
+                }
                 doc.add(new TextField("title", title + " " + "kanjiansdxqfx", Field.Store.NO));
+                if (album.get("release_date") != null) {
+                    doc.add(new StringField("release_date", (String)album.get("release_date"), Field.Store.NO));
+                }
+                else {
+                    doc.add(new StringField("release_date", "NO RELEASE DATE", Field.Store.NO));
+                }
+                int material = (Integer)album.get("material_review_status");
+                int metadata = (Integer)album.get("metadata_review_status");
+                int delivery = (Integer)album.get("delivery_status");
+                if (material == 0) {
+                    doc.add(new StringField("material", "未审核", Field.Store.NO));
+                } else if (material == 1) {
+                    doc.add(new StringField("material", "审核中", Field.Store.NO)); 
+                } else if (material == 2) {
+                    doc.add(new StringField("material", "审核未通过", Field.Store.NO));
+                } else if (material == 3) {
+                    doc.add(new StringField("material", "审核通过", Field.Store.NO));
+                }
+
+                if (metadata == 0) {
+                    doc.add(new StringField("metadata", "未审核", Field.Store.NO));
+                } else if (metadata == 1) {
+                    doc.add(new StringField("metadata", "审核中", Field.Store.NO)); 
+                } else if (metadata == 2) {
+                    doc.add(new StringField("metadata", "审核未通过", Field.Store.NO));
+                } else if (metadata == 3) {
+                    doc.add(new StringField("metadata", "审核通过", Field.Store.NO));
+                }
+
+                if (delivery == 0) {
+                    doc.add(new StringField("delivery", "未上架", Field.Store.NO));
+                } else if (delivery == 1) {
+                    doc.add(new StringField("delivery", "已上架", Field.Store.NO));
+                } else if (delivery == 2) {
+                    doc.add(new StringField("delivery", "已下架", Field.Store.NO));
+                } else if (delivery == 3) {
+                    doc.add(new StringField("delivery", "上架中", Field.Store.NO));
+                }
+
                 Field sourceField = new IntField("source", (Integer)album.get("source"), Field.Store.NO);
                 doc.add(sourceField);
                 writer.addDocument(doc);

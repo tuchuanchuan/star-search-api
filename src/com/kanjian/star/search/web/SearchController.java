@@ -90,15 +90,23 @@ public class SearchController {
     public String searchAlbum(
 			@RequestParam(value="query", required=false) String query,
 			@RequestParam(value="source", required=false) String source,
+			@RequestParam(value="material", required=false) String material,
+			@RequestParam(value="metadata", required=false) String metadata,
+			@RequestParam(value="group_status", required=false) String group_status,
+			@RequestParam(value="delivery_status", required=false) String delivery_status,
+			@RequestParam(value="start_date", required=false) String start_date,
+			@RequestParam(value="end_date", required=false) String end_date,
 			@RequestParam(value="start", required=false) String start,
 			@RequestParam(value="rows", required=false) String rows,
             HttpServletResponse response) throws IOException, ParseException {
         int qs = 0;
         int qr = 20;
+        int qsource = -1;
         List<Integer> results = new ArrayList<Integer>();
         if (start != null) qs = Integer.parseInt(start);
         if (rows != null) qr = Integer.parseInt(rows);
-        int total = AlbumSearcher.searchAlbum(query, Integer.parseInt(source), qs, qr, results);
+        if (source != null) qsource = Integer.parseInt(source);
+        int total = AlbumSearcher.searchAlbum(query, material, metadata, group_status, delivery_status, start_date, end_date, qsource, qs, qr, results);
         JsonObject ret = new JsonObject();
         ret.addProperty("error_status", 0);
         Gson gson = new Gson();

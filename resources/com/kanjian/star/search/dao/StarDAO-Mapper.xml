@@ -26,6 +26,13 @@
             id,
             name,
             version,
+            _upc as upc,
+            distribution_company,
+            author_list,
+            DATE_FORMAT(release_date, '%Y%m%d') as release_date,
+            material_review_status,
+            metadata_review_status,
+            delivery_status,
             source
         FROM
             kanjian_ddex_album
