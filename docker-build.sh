@@ -2,7 +2,7 @@
 
 echo 'compile && pack'
 docker build -t star-search-gradle -f Dockerfile-gradle .
-docker run -v --rm ${PWD}:/usr/src/app star-search-gradle
+docker run --rm -v ${PWD}:/usr/src/app star-search-gradle
 
 echo 'docker build && push'
 datetime_str=`date +%Y%m%d%H%M`
